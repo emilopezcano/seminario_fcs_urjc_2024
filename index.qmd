@@ -1,10 +1,11 @@
 ---
 title: "Generación con R de tablas y gráficos listos para publicar"
-subtitle: "VIV Seminario Análisis de datos avanzados en Ciencias de la Salud"
+subtitle: "VII Seminario Análisis de datos avanzados en Ciencias de la Salud"
 author: "Emilio L. Cano"
 affiliation: "Data Science Lab - URJC"
 date: "2024-10-22"
 lang: es
+toc: true
 format: 
   html:
     self-contained: true
@@ -59,18 +60,24 @@ Además, vamos a utilizar los siguientes paquetes. Posiblemente algunos ya los t
 palmerpenguins
 summarytools
 flextable
-kablextra
+kableExtra
 gt
 gtsummary
 ggstatsplot
 quarto
+knitr
+markdown
 dplyr
+reactable
+modelsummary
+report
+effectsize
 ```
 
 El paquete `dplyr` lo usaremos para manipular los datos.
 
 ::: callout-note
-Para seguir el material, puedes crear un proyecto vacío de RStudio, o crearlo a partir de este material que se encuentra en GitHub. En el primer caso, tendrás que crear un script e ir pegando el código de este documento. En el segundo, puedes abrir el script \``index.R`\` que ya contiene el código e ir ejecutándolo directamente.
+Para seguir el material, puedes crear un proyecto vacío de RStudio, o crearlo a partir de este material que se encuentra en GitHub\^\[Para ello debes pegar este enlace en el cuadro de diálogo de crear proyecto desde control de versiones: git\@github.com:emilopezcano/seminario_fcs_urjc_2024.git\]. En el primer caso, tendrás que crear un script e ir pegando el código de este documento. En el segundo, puedes abrir el script \``index.R`\` que ya contiene el código e ir ejecutándolo directamente.
 :::
 
 # Datos de ejemplo
@@ -118,7 +125,7 @@ Pero antes de nada, vamos a ver qué tipos de tablas podemos querer generar.
 
 -   **Tablas de frecuencias**. Son tablas de recuentos o proporciones (o porcentajes si multiplicamos por 100), que pueden tener totales de filas o columnas. Generalmente para datos de tipo cualitativo, pero también son adecuadas en datos cuantitativos discretos si hay pocos posibles valores, y en datos continuos agrupando en intervalos.
 
--   **Tablas de resultados de modelos**. Aquí puede ser muy variado: coeficientes de un modelo de regresión, de un ANOVA, etc.
+-   **Tablas de resultados de modelos**. Aquí puede ser muy variado: coeficientes de un modelo de regresión, de un ANOVA, de los efectos, etc.
 
 -   **Tablas estandarizadas** de estudios específicos, por ejemplo ensayos clínicos.
 
@@ -148,13 +155,19 @@ Hay varios paquetes que se pueden utilizar para dar formato adecuado a las tabla
 
 -   {knitr} (@R-knitr): Incorpora la función `kable()` para hacer tablas sencillas.
 
--   {kablextra} (@R-kablextra): Paquete que amplía la funcionalidad de la función `kable()` para crear tablas bien complejas. Muy centrado en formato de salida HTML.
+-   {kableExtra} (@R-kableExtra): Paquete que amplía la funcionalidad de la función `kable()` para crear tablas bien complejas. Muy centrado en formato de salida HTML.
 
 -   {flextable} (@R-flextable): Tiene su propia gramática y se pueden hacer auténticas virguerías. La principal ventaja es que las tablas generadas en Word quedan muy bien.
 
 -   {gt} (@R-gt): Creado por el equipo de RStudio que sigue la filosofía *tidy*. Mucho potencial, gramática parecida a {flextable}, pero no se termina de integrar bien con Word. Para HTML, la mejor opción.
 
--   {gtsummary} (\@R-gtsummary).
+-   {gtsummary} (@R-gtsummary)
+
+-    {modelsummary} (\@R-modelsummary)
+
+-   {report} (\@R-report)
+
+-   {effectsize} (\@R-effectsize)
 
 Por otra parte, hay paquetes que preparan los datos de la salida estándar en forma de tablas de datos, o directamente en tablas formateadas.
 
@@ -200,7 +213,7 @@ pingu |>
 
 ## Tabla de frecuencias
 
-Podemos crear todas las combinaciones de tablas con las funciones de R base, y formatearlas por ejemplo con {kablextra}:
+Podemos crear todas las combinaciones de tablas con las funciones de R base, y formatearlas por ejemplo con {kableExtra}:
 
 ```{r}
 #| message: false
@@ -214,7 +227,7 @@ pingu |>
 ```
 
 ::: callout-info
-Al cargar {kablextra} la función ´kable()´ sew "sobreescribe".
+Al cargar {kableExtra} la función ´kable()´ sew "sobreescribe".
 :::
 
 Pero el paquete {summarytools} tiene una función que quizás os guste más:
@@ -306,7 +319,7 @@ knitr::write_bib(c(
   "quarto", "palmerpenguins",
   "xtable", "flextable", "knitr", "gt",
   "summarytools", "modelsummary", "broom", "kableExtra",
-  "gtsummary"
+  "gtsummary", "report", "modelsummary", "effectsize", "reactable"
 ), 
 'packages.bib')
 ```
