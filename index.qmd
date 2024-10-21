@@ -10,6 +10,10 @@ format:
   html:
     self-contained: true
 editor: visual
+knitr: 
+  opts_chunk: 
+    warning: false
+    message: false
 bibliography: 
   - references.bib
   - packages.bib
@@ -68,10 +72,10 @@ quarto
 knitr
 markdown
 dplyr
-reactable
 modelsummary
 report
 effectsize
+reactable
 ```
 
 El paquete `dplyr` lo usaremos para manipular los datos.
@@ -113,6 +117,9 @@ Abre la tabla de datos en el explorador de datos. Comprueba los tipos de datos y
 
 No obstante, como la sesión va a ser muy práctica, te recomiendo que intentes reproducir los ejemplos con datos de tu propia investigación o interés. Deben estar en formato "rectangular", es decir, una columna para cada variable y una fila para cada observación, en un data.frame de R. A partir de ahí, solo tendrás que cambiar `pingu` por el nombre de tu data.frame y los nombres de las variables pingüineras por los tuyos.
 
+
+
+
 # Formateo de tablas listas para publicar
 
 Cuando "mandamos" una tabla de datos a la consola, tenemos un formato de texto plano que generalmente no nos sirve para insertar en una publicación decente. Entonces tenemos que darle un formato **adecuado** y **atractivo**.
@@ -143,15 +150,15 @@ Otra cuestión importante es en qué formato de salida queremos nuestra tabla. R
 
 -   Word. Estas tablas se generan directamente dentro de un documento Word.
 
--   markdown. Es un formato que interpretan los formatos modernos como Rmarkdown y Quarto.
+-   markdown. Es un formato que interpretan los sistemas modernos como Rmarkdown y Quarto.
 
-En RStudio se utiliza el programa `pandoc` para convertir entre formatos (no solo tablas, cualquier documento). Y el flujo habitual es crear el archivo (o tabla) en markdown, y de ahí convertir al formato final. Pero esto va a ser transparente para nosotros.
+En RStudio se utiliza el programa `pandoc` para convertir entre formatos (no solo tablas, cualquier documento). Y el flujo de trabajo es crear el archivo (o tabla) en markdown, y de ahí convertir al formato final. Pero esto va a ser transparente para nosotros.
 
 ## Paquetes disponibles
 
-Hay varios paquetes que se pueden utilizar para dar formato adecuado a las tablas y poder utilizarlo en las publicaciones. Entre ellos:
+Hay varios paquetes que se pueden utilizar para dar formato adecuado a las tablas a partir de un data.frame y poder utilizarlo en las publicaciones. Entre ellos:
 
--   {xtable} (@R-xtable): Es un clásico, y antes de aparecer los más modernos era el preferido par LaTeX y html.
+-   {xtable} (@R-xtable): Es un clásico, y antes de aparecer los más modernos era el preferido par LaTeX y html (no lo usaremos aquí).
 
 -   {knitr} (@R-knitr): Incorpora la función `kable()` para hacer tablas sencillas.
 
@@ -159,25 +166,45 @@ Hay varios paquetes que se pueden utilizar para dar formato adecuado a las tabla
 
 -   {flextable} (@R-flextable): Tiene su propia gramática y se pueden hacer auténticas virguerías. La principal ventaja es que las tablas generadas en Word quedan muy bien.
 
--   {gt} (@R-gt): Creado por el equipo de RStudio que sigue la filosofía *tidy*. Mucho potencial, gramática parecida a {flextable}, pero no se termina de integrar bien con Word. Para HTML, la mejor opción.
+-   {gt} (@R-gt): Creado por el equipo de RStudio que sigue la filosofía *tidy*. Mucho potencial, gramática parecida a {flextable}, pero no se termina de integrar bien con Word. Para HTML estático, la mejor opción.
 
--   {gtsummary} (@R-gtsummary)
-
--    {modelsummary} (\@R-modelsummary)
-
--   {report} (\@R-report)
-
--   {effectsize} (\@R-effectsize)
+Hay algunos paquetes con los que se pueden crear tablas interactivas, que permiten ordenar, paginar, filtrar, etc. En este caso solo para formato de salida HTML. {reactable} es una de las opciones, veremos un ejemplo.
 
 Por otra parte, hay paquetes que preparan los datos de la salida estándar en forma de tablas de datos, o directamente en tablas formateadas.
 
--   {broom} (@R-broom): La función `tidy()` guarda en un data.frame los coeficientes de un modelo, y la función `glance()` las principales métricas.
+-   {gtsummary} (@R-gtsummary): Amplía la funcionalidad de {gt} y produce tablas estandarizadas que se usan en muchos tipos de estudios. Por ejemplo, la habitual "Tabla 1" que describe los datos de un ensayo clínico.
 
 -   {summarytools} (@R-summarytools): Tiene funciones para obtener los resúmenes de datos más habituales.
 
--   {modelsummary} (@R-modelsummary): Centrado en formatear los resultados de modelos.
+-   {modelsummary} (\@R-modelsummary): Produce tablas de resumen de datos, pero también de los resultados de modelos ajustados sobre los datos.
 
-Por último antes de empezar con los ejemplos, hay que destacar que las funciones utilizadas producirán o bien texto en la consola, o bien HTML en el panel *Viewer*. Si insertamos el código en informes reproducibles Rmarkdown o quartom entonces tendremos la tabla integrada con el resto de narrativa y gráficos de la publicación.
+-   {report} (\@R-report): Este paquete produce textos completos (en inglés) interpretando los resultados de un modelo o análisis. Ideal para acompañar a una tabla.
+
+-   {effectsize} (\@R-effectsize): Produce tablas con tamaño de efectos y multitud de métricas en formato de tabla.
+
+-   {broom} (@R-broom): La función `tidy()` guarda en un data.frame los coeficientes de un modelo, y la función `glance()` las principales métricas.
+
+Por último antes de empezar con los ejemplos, hay que destacar que las funciones utilizadas producirán o bien texto en la consola, o bien HTML en el panel *Viewer*. Si insertamos el código en informes reproducibles Rmarkdown o quarto, entonces tendremos la tabla integrada con el resto de narrativa y gráficos de la publicación.
+
+# Informes con quarto
+
+Para tener la tabla formateada en un formato de salida, tienes que crear un documento R Markdown o quarto, y así irás viendo el resultado en un formato de salida a medida que avancemos. Es recomendable trabajar con el formato HTML, que es más rápido, y al final ver cómo queda también en Word o PDF.
+
+Por supuesto también se pueden generar las tablas desde un script, y después copiar desde el visualizador para pegar en otro programa.
+
+::: callout-tip
+## Practica
+
+1.  Crear documento
+
+2.  Insertar chunks (pegar el código de este documento)
+
+3.  Insertar código
+
+4.  Insertar referencias cruzadas
+:::
+
+# Uso de los paquetes y ejemplos
 
 ## Tablas de datos con `knitr::kable()`
 
@@ -193,7 +220,7 @@ pingu |>
 ::: callout-tip
 ## Practica
 
-Prueba a cambiar opciones con los argumentos de la función.
+Prueba a cambiar opciones con los argumentos de la función. Mira la ayuda de la función poniendo en la consola `?knitr`.
 :::
 
 ## Resúmenes de datos con {summarytools}
@@ -227,10 +254,10 @@ pingu |>
 ```
 
 ::: callout-info
-Al cargar {kableExtra} la función ´kable()´ sew "sobreescribe".
+Al cargar {kableExtra} la función ´kable()´ se "sobreescribe".
 :::
 
-Pero el paquete {summarytools} tiene una función que quizás os guste más:
+Pero el paquete {summarytools} tiene la función `ctable()` que quizás os guste más:
 
 ```{r, results='asis'}
 ctable(pingu$species, pingu$sex)
@@ -239,34 +266,111 @@ ctable(pingu$species, pingu$sex)
 ::: callout-tip
 ## Practica
 
-Explora las opciones de la función.
+Explora las opciones de la función (por ejemplo, para calcular las frecuencias condicionadas por columna en vez de por fila).
 :::
+
+## Tabla 1 con {gtsummary}
+
+```{r}
+library(gtsummary)
+pingu |> 
+  select(body_mass_g, species, bill_length_mm, sex) |> 
+  tbl_summary(by = sex)
+```
+
+Más ejemplos: <https://www.danieldsjoberg.com/gtsummary/>.
 
 ## Resúmenes de modelos
 
+Varios de los paquetes mencionados nos permiten extraer la información de los modelos. La siguiente expresión crea un modelo de regresión lineal:
+
 ```{r}
 #| message: false
+m <- pingu |> 
+  lm(body_mass_g ~bill_length_mm + bill_depth_mm + sex, data = _ )
+```
+
+Con estas expresiones primero guardamos los coeficientes en una tabla, y después formateamos la tabla con {flextable}.
+
+```{r}
 library(flextable)
 library(broom)
-m <- pingu |> 
-  lm(body_mass_g ~bill_length_mm + bill_depth_mm + sex, data = _ ) 
 m |>
   tidy() |> 
   flextable()
 ```
+
+::: callout-note
+## Practica
+
+Mira la ayuda y formatea las columnas.
+:::
+
+Con el paquete modelsummary sería así:
 
 ```{r}
 library(modelsummary)
 modelsummary(m)
 ```
 
-Ver más ejemplos: https://vincentarelbundock.github.io/modelsummary/articles/modelsummary.html
+Se pueden comparar varios modelos. Ver más ejemplos: <https://vincentarelbundock.github.io/modelsummary/articles/modelsummary.html>
+
+También el paquete {gtsummary} produce tablas de modelos (puede requerir que instales un paquete adicional):
+
+```{r}
+tbl_regression(m)
+```
+
+## Informes e interpretación
+
+Hay un conjunto de paquetes llamado {easystats} que producen tanto tablas
+como resúmenes textuales con la interpretación de los análisis estadísticos.
+El paquete {effectsize} calcula y visualiza los efectos de un modelo, tanto
+en forma de tabla como gráfica.
+
+```{r}
+library(effectsize)
+cohens_d(body_mass_g ~ sex, data = pingu) 
+interpret_cohens_d(-0.94)
+```
+
+```{r}
+maov <- aov(body_mass_g ~ species, data = pingu)
+eta_squared(maov)
+interpret_eta_squared(0.67)
+```
+
+El paquete {report} devuelve párrafos completos, combinando toda la información
+
+```{r}
+library(report)
+report(maov)
+```
+
+
+## Tablas interactivas
+
+Hay varios paquetes que producen tablas interactivas para publicar en HTML, ya sea 
+compartiendo el archivo que se abre en el navegador, o para publicar en la web.
+{DT} es uno de los más populares, pero el paquete {reactable} está ganando terreno.
+
+El siguiente código genera una tabla interactiva para explorar todo el 
+dataset de los pingüinos.
+
+```{r}
+library(reactable)
+pingu |> 
+  reactable(filterable = TRUE,
+            striped = TRUE)
+```
+
+
 
 # Gráficos listos para publicar
 
 Podemos crear gráficos suficientemente bonitos e impactantes con {ggplot2}. Pero a veces requiere mucho "tuneo".
 
-El paquete {ggstatsplot} (R-ggstatsplot) crea gráficos que incluyen detalles estadísticos que son muy convenientes para publicar.
+El paquete {ggstatsplot} (\@R-ggstatsplot) crea gráficos que incluyen detalles estadísticos que son muy convenientes para publicar.
 
 ```{r}
 #| message: false
@@ -279,7 +383,7 @@ pingu |> ggpiestats(x = species, y = sex)
 ```
 
 ```{r}
-pingu |> ggbetweenstats(species, body_mass_g)
+pingu |> ggbetweenstats(species, body_mass_g, bf.message = FALSE)
 ```
 
 ::: callout-info
@@ -298,17 +402,9 @@ Explora el resto de funciones del paquete.
 
 # Paquetes más especializados aún
 
--   Libro: https://r4csr.org/index.html
+-   Libro: [R for Clinical Study Reports and Submission](https://r4csr.org/index.html)
 
-# Informes con quarto
 
-1.  Crear documento
-
-2.  Insertar chunks
-
-3.  Insertar código
-
-4.  Referencias cruzadas
 
 # Referencias
 
@@ -319,7 +415,8 @@ knitr::write_bib(c(
   "quarto", "palmerpenguins",
   "xtable", "flextable", "knitr", "gt",
   "summarytools", "modelsummary", "broom", "kableExtra",
-  "gtsummary", "report", "modelsummary", "effectsize", "reactable"
+  "gtsummary", "report", "modelsummary", "effectsize", "reactable",
+  "ggstatsplot"
 ), 
 'packages.bib')
 ```
