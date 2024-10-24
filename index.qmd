@@ -1,7 +1,7 @@
 ---
 title: "Generación con R de tablas y gráficos listos para publicar"
 subtitle: "VII Seminario Análisis de datos avanzados en Ciencias de la Salud"
-author: "Emilio L. Cano"
+author: "Emilio L. Cano (emilio.lopez@urjc.es)"
 affiliation: "Data Science Lab - URJC"
 date: "2024-10-22"
 lang: es
@@ -81,7 +81,16 @@ reactable
 El paquete `dplyr` lo usaremos para manipular los datos.
 
 ::: callout-note
-Para seguir el material, puedes crear un proyecto vacío de RStudio, o crearlo a partir de este material que se encuentra en GitHub\^\[Para ello debes pegar este enlace en el cuadro de diálogo de crear proyecto desde control de versiones: git\@github.com:emilopezcano/seminario_fcs_urjc_2024.git\]. En el primer caso, tendrás que crear un script e ir pegando el código de este documento. En el segundo, puedes abrir el script \``index.R`\` que ya contiene el código e ir ejecutándolo directamente.
+Para seguir el material, tienes varias opciones:
+
+1. Crear un proyecto vacío de RStudio. Crea un script y pega el código para ir probándolo, y un documento quarto como se explica más adelante para ver cómo queda en el formato de salida.
+
+2. Si utilizas git y GitHub, crea el proyecto a partir de este material ^[Para ello debes pegar este enlace en el cuadro de diálogo de crear proyecto desde control de versiones: git@github.com:emilopezcano/seminario_fcs_urjc_2024.git]. Abre el script `index.R` que ya contiene el código y ve ejecutándolo directamente.
+
+3. Descarga el material^[Por defecto lo hace en el escritorio] con esta expresión en la consola. El proyecto se abre automáticamente:
+
+`usethis::use_course("emilopezcano/seminario_fcs_urjc_2024")`
+
 :::
 
 # Datos de ejemplo
@@ -116,9 +125,6 @@ Abre la tabla de datos en el explorador de datos. Comprueba los tipos de datos y
 :::
 
 No obstante, como la sesión va a ser muy práctica, te recomiendo que intentes reproducir los ejemplos con datos de tu propia investigación o interés. Deben estar en formato "rectangular", es decir, una columna para cada variable y una fila para cada observación, en un data.frame de R. A partir de ahí, solo tendrás que cambiar `pingu` por el nombre de tu data.frame y los nombres de las variables pingüineras por los tuyos.
-
-
-
 
 # Formateo de tablas listas para publicar
 
@@ -176,11 +182,11 @@ Por otra parte, hay paquetes que preparan los datos de la salida estándar en fo
 
 -   {summarytools} (@R-summarytools): Tiene funciones para obtener los resúmenes de datos más habituales.
 
--   {modelsummary} (\@R-modelsummary): Produce tablas de resumen de datos, pero también de los resultados de modelos ajustados sobre los datos.
+-   {modelsummary} (@R-modelsummary): Produce tablas de resumen de datos, pero también de los resultados de modelos ajustados sobre los datos.
 
--   {report} (\@R-report): Este paquete produce textos completos (en inglés) interpretando los resultados de un modelo o análisis. Ideal para acompañar a una tabla.
+-   {report} (@R-report): Este paquete produce textos completos (en inglés) interpretando los resultados de un modelo o análisis. Ideal para acompañar a una tabla.
 
--   {effectsize} (\@R-effectsize): Produce tablas con tamaño de efectos y multitud de métricas en formato de tabla.
+-   {effectsize} (@R-effectsize): Produce tablas con tamaño de efectos y multitud de métricas en formato de tabla.
 
 -   {broom} (@R-broom): La función `tidy()` guarda en un data.frame los coeficientes de un modelo, y la función `glance()` las principales métricas.
 
@@ -323,10 +329,7 @@ tbl_regression(m)
 
 ## Informes e interpretación
 
-Hay un conjunto de paquetes llamado {easystats} que producen tanto tablas
-como resúmenes textuales con la interpretación de los análisis estadísticos.
-El paquete {effectsize} calcula y visualiza los efectos de un modelo, tanto
-en forma de tabla como gráfica.
+Hay un conjunto de paquetes llamado {easystats} que producen tanto tablas como resúmenes textuales con la interpretación de los análisis estadísticos. El paquete {effectsize} calcula y visualiza los efectos de un modelo, tanto en forma de tabla como gráfica.
 
 ```{r}
 library(effectsize)
@@ -347,15 +350,30 @@ library(report)
 report(maov)
 ```
 
+::: {callout-tip}
+Para que salga el texto y las tablas anteriores formateados en el formato de salida, hay que añadir la opción `results: 'asis'` en el encabezado del chunk. A continuación un ejemplo completo con el modelo, el efecto y la interpretación.
+:::
+
+```{r}
+#| results: asis
+library(gt)
+maov |> tidy() |> 
+  gt() |> 
+  sub_missing(missing_text = "")
+  
+tbl_regression(lm(maov))
+print_md(eta_squared(maov))
+report(maov)
+```
+
+
+
 
 ## Tablas interactivas
 
-Hay varios paquetes que producen tablas interactivas para publicar en HTML, ya sea 
-compartiendo el archivo que se abre en el navegador, o para publicar en la web.
-{DT} es uno de los más populares, pero el paquete {reactable} está ganando terreno.
+Hay varios paquetes que producen tablas interactivas para publicar en HTML, ya sea compartiendo el archivo que se abre en el navegador, o para publicar en la web. {DT} es uno de los más populares, pero el paquete {reactable} está ganando terreno.
 
-El siguiente código genera una tabla interactiva para explorar todo el 
-dataset de los pingüinos.
+El siguiente código genera una tabla interactiva para explorar todo el dataset de los pingüinos.
 
 ```{r}
 library(reactable)
@@ -363,8 +381,6 @@ pingu |>
   reactable(filterable = TRUE,
             striped = TRUE)
 ```
-
-
 
 # Gráficos listos para publicar
 
@@ -403,8 +419,6 @@ Explora el resto de funciones del paquete.
 # Paquetes más especializados aún
 
 -   Libro: [R for Clinical Study Reports and Submission](https://r4csr.org/index.html)
-
-
 
 # Referencias
 

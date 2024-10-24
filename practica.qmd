@@ -1,0 +1,288 @@
+---
+title: "Informe con quarto para practicar"
+author: "Emilio L. Cano"
+lang: es
+toc: true
+format: 
+  html:
+    self-contained: true
+editor: visual
+knitr: 
+  opts_chunk: 
+    warning: false
+    message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+#| purl: false
+library(knitr)
+opts_chunk$set(out.width = "80%", 
+               fig.align = 'center',
+               error = TRUE)
+```
+
+
+
+# Datos
+
+
+
+```{r}
+library(palmerpenguins)
+penguins
+```
+
+
+```{r}
+pingu <- penguins
+```
+
+
+
+## Tablas de datos con `knitr::kable()`
+
+```{r}
+#| message: false
+library(dplyr)
+library(knitr)
+pingu |> 
+  slice_head(n = 10) |> 
+  kable()
+```
+
+::: callout-tip
+## Practica
+
+Prueba a cambiar opciones con los argumentos de la función. Mira la ayuda de la función poniendo en la consola `?knitr`.
+:::
+
+Por ejemplo, podemos cambiar el número de decimales o personalizar los encabezados:
+
+```{r}
+#| message: false
+pingu |> 
+  slice_head(n = 10) |> 
+  kable(digits = 0,
+        col.names = c("Especie", "Isla", "Longitud pico", "Profundidad pico",
+                      "Longitud aleta", "Masa", "Sexo", "Año"))
+```
+
+
+
+## Resúmenes de datos con {summarytools}
+
+```{r}
+#| results: asis
+library(summarytools)
+pingu |> 
+  descr(bill_length_mm)
+```
+
+```{r}
+#| results: asis
+pingu |> 
+  dfSummary()
+```
+
+## Tabla de frecuencias
+
+Podemos crear todas las combinaciones de tablas con las funciones de R base, y formatearlas por ejemplo con {kableExtra}:
+
+```{r}
+#| message: false
+library(kableExtra)
+pingu |> 
+  select(species, sex) |> 
+  table() |> 
+  prop.table() |> 
+  addmargins() |> 
+  kable()
+```
+
+Pero el paquete {summarytools} tiene la función `ctable()` que quizás os guste más:
+
+```{r, results='asis'}
+ctable(pingu$species, pingu$sex)
+```
+
+::: callout-tip
+## Practica
+
+Explora las opciones de la función (por ejemplo, para calcular las frecuencias condicionadas por columna en vez de por fila).
+:::
+
+Por ejemplo para tener frecuencias conjuntas relativas en los porcentajes:
+
+```{r, results='asis'}
+ctable(pingu$species, pingu$sex, prop = "t")
+```
+
+
+
+
+## Tabla 1 con {gtsummary}
+
+```{r}
+library(gtsummary)
+pingu |> 
+  select(body_mass_g, species, bill_length_mm, sex) |> 
+  tbl_summary(by = sex)
+```
+
+
+## Resúmenes de modelos
+
+Varios de los paquetes mencionados nos permiten extraer la información de los modelos. La siguiente expresión crea un modelo de regresión lineal:
+
+```{r}
+#| message: false
+m <- pingu |> 
+  lm(body_mass_g ~bill_length_mm + bill_depth_mm + sex, data = _ )
+```
+
+Con estas expresiones primero guardamos los coeficientes en una tabla, y después formateamos la tabla con {flextable}.
+
+```{r}
+library(flextable)
+library(broom)
+m |>
+  tidy() |> 
+  flextable()
+```
+
+::: callout-note
+## Practica
+
+Mira la ayuda y formatea las columnas.
+:::
+
+
+
+```{r}
+m |>
+  tidy() |> 
+  flextable() |> 
+  flextable::set_header_labels(term = "Término",
+                               estimate = "Coeficiente",
+                               std.error = "Error estándar",
+                               statistic = "t",
+                               p.value = "p-valor") |> 
+  colformat_double(j = 5, digits = 4)  |> 
+  colformat_double(j = 2:4, digits = 2) 
+  
+```
+
+
+
+Con el paquete modelsummary sería así:
+
+```{r}
+library(modelsummary)
+modelsummary(m)
+```
+
+Se pueden comparar varios modelos. Ver más ejemplos: <https://vincentarelbundock.github.io/modelsummary/articles/modelsummary.html>
+
+También el paquete {gtsummary} produce tablas de modelos (puede requerir que instales un paquete adicional):
+
+```{r}
+tbl_regression(m)
+```
+
+## Informes e interpretación
+
+Hay un conjunto de paquetes llamado {easystats} que producen tanto tablas
+como resúmenes textuales con la interpretación de los análisis estadísticos.
+El paquete {effectsize} calcula y visualiza los efectos de un modelo, tanto
+en forma de tabla como gráfica.
+
+```{r}
+library(effectsize)
+cohens_d(body_mass_g ~ sex, data = pingu) 
+interpret_cohens_d(-0.94)
+```
+
+```{r}
+maov <- aov(body_mass_g ~ species, data = pingu)
+eta_squared(maov)
+interpret_eta_squared(0.67)
+```
+
+El paquete {report} devuelve párrafos completos, combinando toda la información
+
+```{r}
+library(report)
+report(maov)
+```
+
+:::{callout-tip}
+
+Para que salga el texto formateado en el formato de salida, hay que añadir la
+opción `results: 'asis'` en el encabezado del chunk:
+
+::::
+
+```{r}
+#| results: asis
+library(report)
+report(maov)
+```
+
+
+
+## Tablas interactivas
+
+
+
+```{r}
+library(reactable)
+pingu |> 
+  reactable(filterable = TRUE,
+            striped = TRUE)
+```
+
+
+
+# Gráficos listos para publicar
+
+
+
+```{r}
+#| message: false
+library(ggstatsplot)
+pingu |> ggbarstats(x = species, y = sex)
+```
+
+```{r}
+pingu |> ggpiestats(x = species, y = sex)
+```
+
+```{r}
+pingu |> ggbetweenstats(species, body_mass_g, bf.message = FALSE)
+```
+
+```{r}
+m |> ggcoefstats()
+```
+
+::: tip
+## Practica
+
+Explora el resto de funciones del paquete.
+:::
+
+Por ejemplo, para analizar solo una variable, podemos obtener un histograma "enriquecido":
+
+```{r}
+pingu |> 
+  ggstatsplot::gghistostats(body_mass_g, 
+                            test.value = 4500,
+                            normal.curve = TRUE,
+                            bf.message = FALSE)
+```
+
+
+
+
